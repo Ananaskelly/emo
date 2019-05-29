@@ -9,7 +9,7 @@ labels1 = ['Fr', 'An', 'Hp', 'Sd', 'Dg', 'Ct', 'Am']
 labels2 = ['A', 'V', 'I']
 
 
-ROOT_DIR = '../data/SEMAINE_ROOT'
+ROOT_DIR = '../data'
 
 
 def parse_files():
@@ -95,5 +95,82 @@ def parse_files():
             shutil.rmtree(stat_dir_path)
 
 
+def get_main_table():
+    data_path = os.path.join(ROOT_DIR, 'SEMAINE')
+    store_path = os.path.join(ROOT_DIR, 'SEMAINE_STAT')
+
+    main_table_file = os.path.join(store_path, 'common_stat.csv')
+
+    dirs = os.listdir(data_path)
+
+    sess_dict = {}
+    for d in dirs:
+
+        if not os.path.isdir(os.path.join(data_path, d)):
+            continue
+
+        # print('Start processing directory {}'.format(os.path.join(data_path, d)))
+
+        files = glob.glob(os.path.join(data_path, d, '*.txt'))
+
+        for file in files:
+            name = os.path.basename(file)
+            if not name.startswith('R'):
+                # print(name)
+                continue
+            idx = name.find('S')
+            rater = name[1:idx]
+
+            idx1 = name.find('T')
+            session_num = name[idx+1:idx1]
+
+            target = name[idx1+1]
+
+            idx2 = name.find('D')
+            emo_class = name[idx2 + 1:-4]
+
+            idx3 = name.find('C')
+            char_class = name[idx3 + 1:idx3 + 3]
+
+            if emo_class not in labels1 and emo_class not in labels2:
+                # print('Annotation file for {} class, skip this.'.format(emo_class))
+                continue
+
+            if session_num not in sess_dict.keys():
+                sess_dict[session_num] = {
+                    target: {
+                        char_class: {}
+                    }
+                }
+                for label in labels1 + labels2:
+                    sess_dict[session_num][target][char_class][label] = 0
+            if target not in sess_dict[session_num].keys():
+                sess_dict[session_num][target] = {
+                    char_class: {}
+                }
+                for label in labels1 + labels2:
+                    sess_dict[session_num][target][char_class][label] = 0
+            if char_class not in sess_dict[session_num][target].keys():
+                sess_dict[session_num][target][char_class] = {}
+                for label in labels1 + labels2:
+                    sess_dict[session_num][target][char_class][label] = 0
+            sess_dict[session_num][target][char_class][emo_class] += 1
+
+    with open(main_table_file, 'w') as log_file:
+        pref_labels1 = list(map(lambda x: 'D{}'.format(x), labels1))
+        pref_labels2 = list(map(lambda x: 'D{}'.format(x), labels2))
+        log_file.write('S,T,C,{},{}\n'.format(','.join(pref_labels1), ','.join(pref_labels2)))
+
+        for session in sess_dict.keys():
+            for target in sess_dict[session].keys():
+                for char_class in sess_dict[session][target].keys():
+                    line = '{},{},{}'.format(session, target, char_class)
+                    for label in labels1 + labels2:
+                        line += ',{}'.format(sess_dict[session][target][char_class][label])
+                    line += '\n'
+                    log_file.write(line)
+
+
 if __name__ == '__main__':
-    parse_files()
+    # parse_files()
+    get_main_table()
