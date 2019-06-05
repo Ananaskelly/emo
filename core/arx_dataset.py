@@ -128,6 +128,11 @@ class ARXDataset(dict):
         self.labels_by_file = self.labels_by_file[idx]
 
     def split(self, tp=0.3):
+        """
+
+        :param tp: number 0...1 - part files for test set
+        :return:
+        """
         num_ex = self.feats_by_file.shape[0]
         num_test_ex = int(num_ex*tp)
 

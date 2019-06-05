@@ -30,9 +30,14 @@ class ARXTrainer:
         self.batch_size = 28
         self.max_num_epoch = 15
 
-    def train_model(self, order, context):
+    def train_model(self, order, context, val_to_predict=0):
+        """
+
+        :param val_to_predict: for training predict arousal or valence value
+        :return:
+        """
         
-        val = 1
+        val = val_to_predict
 
         print('Start testing model with order: {}, context: {}'.format(order, context))
 
@@ -101,4 +106,3 @@ class ARXTrainer:
         print('validation CCC: {}'.format(cur_CCC))
 
         return cur_CCC
-

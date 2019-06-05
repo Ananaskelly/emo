@@ -35,7 +35,3 @@ if __name__ == '__main__':
     ax.set_zlabel('mean CCC value')
 
     fig.savefig('arx_val.png')
-    # plt.show()
-    # plt.savefig('arx_arousal.png')
-
-

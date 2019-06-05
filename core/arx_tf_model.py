@@ -4,6 +4,12 @@ import tensorflow as tf
 class ARXTFModel:
 
     def __init__(self, context=7, order=2):
+        """
+        Build ARX model with tf
+
+        :param context: num past feats
+        :param order:   num past values
+        """
         self.x = None
         self.y_past = None
         self.y = None

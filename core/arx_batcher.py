@@ -22,8 +22,13 @@ class ARXBatcher:
     def num_train_samples(self):
         return self.data.shape[0]
 
-    def prepare(self):
-        val = 1
+    def prepare(self, val_to_predict=0):
+        """
+
+        :param val_to_predict: for generating set for valence or for arousal prediction
+        :return:
+        """
+        val = val_to_predict
         for idx, file_feats in enumerate(self.init_data):
             num_feats, feats_dim = file_feats.shape
 
